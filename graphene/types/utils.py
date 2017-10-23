@@ -38,7 +38,15 @@ def yank_fields_from_attrs(attrs, _as=None, sort=True):
     return OrderedDict(fields_with_names)
 
 
+class LazyType(object):
+    def __init__(self, dotted_path, dotted_attributes=None):
+        self.dotted_path = dotted_path
+        self.dotted_attributes = dotted_attributes
+
+
 def get_type(_type):
+    if isinstance(_type, LazyType):
+        return import_string(_type.dotted_path, _type.dotted_attributes)
     if isinstance(_type, string_types):
         return import_string(_type)
     if inspect.isfunction(_type) or isinstance(_type, partial):
